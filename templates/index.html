@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jellyfin Suggestions</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        .header {
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #333;
+            margin: 0;
+            font-size: 2em;
+        }
+        .suggestion-card {
+            margin: 30px 0;
+        }
+        .thumbnail {
+            width: 200px;
+            height: 300px;
+            margin: 0 auto 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .no-thumbnail {
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+        }
+        .title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0 10px;
+        }
+        .type-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin: 0 10px;
+        }
+        .count-badge {
+            display: inline-block;
+            background: #764ba2;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+        }
+        .description {
+            color: #666;
+            line-height: 1.6;
+            margin: 20px 0;
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .buttons {
+            margin-top: 30px;
+        }
+        .btn {
+            padding: 15px 30px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-yes {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+        }
+        .btn-yes:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(86, 171, 47, 0.3);
+        }
+        .btn-no {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+        .btn-no:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 65, 108, 0.3);
+        }
+        .export-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .export-btn:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <button class="export-btn" onclick="exportLikes()">Export Likes</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🎬 Jellyfin Suggestions</h1>
+            <p>Discover your next favorite movie or show!</p>
+        </div>
+        
+        <div class="suggestion-card">
+            <div class="thumbnail">
+                {% if details.thumbnail %}
+                    <img src="{{ details.thumbnail }}" alt="{{ details.title }}">
+                {% else %}
+                    <div class="no-thumbnail">No Image Available</div>
+                {% endif %}
+            </div>
+            
+            <div class="title">{{ details.title }}</div>
+            <div>
+                <span class="type-badge">{{ suggestion.Type }}</span>
+                <span class="count-badge">{{ suggestion.Count }} recommendations</span>
+            </div>
+            
+            <div class="description">
+                {{ details.description }}
+            </div>
+            
+            <div class="buttons">
+                <form method="POST" action="/action" style="display: inline;">
+                    <input type="hidden" name="title" value="{{ suggestion.Name }}">
+                    <input type="hidden" name="type" value="{{ suggestion.Type }}">
+                    <button type="submit" name="action" value="yes" class="btn btn-yes">
+                        ✓ Yes, I like this!
+                    </button>
+                    <button type="submit" name="action" value="no" class="btn btn-no">
+                        ✗ Not interested
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function exportLikes() {
+            fetch('/export')
+                .then(response => response.json())
+                .then(data => {
+                    alert(`Exported ${data.count} liked items to likes.csv`);
+                })
+                .catch(error => {
+                    alert('Error exporting likes');
+                });
+        }
+    </script>
+</body>
+</html> 

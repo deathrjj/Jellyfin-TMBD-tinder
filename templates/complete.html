@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Done! - Jellyfin Suggestions</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+            margin: 0 0 20px 0;
+            font-size: 2em;
+        }
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .btn {
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-export {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+        }
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(86, 171, 47, 0.3);
+        }
+        .btn-regenerate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-regenerate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">🎉</div>
+        <h1>All Done!</h1>
+        <p>
+            Congratulations! You've reviewed all available suggestions. 
+            You can export your liked items or regenerate more suggestions 
+            by running the generate_suggestions.py script again.
+        </p>
+        
+        <div>
+            <button onclick="exportLikes()" class="btn btn-export">
+                📁 Export Likes
+            </button>
+            <a href="/" class="btn btn-regenerate">
+                🔄 Check Again
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function exportLikes() {
+            fetch('/export')
+                .then(response => response.json())
+                .then(data => {
+                    alert(`Exported ${data.count} liked items to likes.csv`);
+                })
+                .catch(error => {
+                    alert('Error exporting likes');
+                });
+        }
+    </script>
+</body>
+</html> 
