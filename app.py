@@ -103,24 +103,37 @@ def tmdb_get_similar(tmdb_id, content_type):
         return []
 
 def get_tmdb_details(title, content_type):
-    """Get title, description, and thumbnail from TMDb"""
+    """Get title, description, thumbnail, and year from TMDb"""
     result = tmdb_search(title, content_type)
     if not result:
         return {
             'title': title,
             'description': 'No description available',
             'thumbnail': None,
-            'tmdb_id': None
+            'tmdb_id': None,
+            'year': None
         }
     
     poster_path = result.get('poster_path')
     thumbnail = f"https://image.tmdb.org/t/p/w500{poster_path}" if poster_path else None
     
+    # Extract year from release_date (movies) or first_air_date (TV shows)
+    year = None
+    if content_type.lower() == "movie":
+        release_date = result.get('release_date')
+        if release_date:
+            year = release_date.split('-')[0]  # Extract year from YYYY-MM-DD format
+    else:  # TV show
+        first_air_date = result.get('first_air_date')
+        if first_air_date:
+            year = first_air_date.split('-')[0]  # Extract year from YYYY-MM-DD format
+    
     return {
         'title': result.get('title') or result.get('name', title),
         'description': result.get('overview', 'No description available'),
         'thumbnail': thumbnail,
-        'tmdb_id': result.get('id')
+        'tmdb_id': result.get('id'),
+        'year': year
     }
 
 def update_recommendations(title, content_type):
